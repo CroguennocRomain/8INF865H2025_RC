@@ -62,6 +62,14 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Class" />
+        <option value="Kotlin File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -182,5 +190,21 @@
       <updated>1738959288021</updated>
     </task>
     <servers />
+  </component>
+  <component name="play_dynamic_filters_status">
+    <option name="appIdToCheckInfo">
+      <map>
+        <entry key="com.example.unscramble">
+          <value>
+            <CheckInfo lastCheckTimestamp="1738963203803" />
+          </value>
+        </entry>
+        <entry key="com.example.unscramble.test">
+          <value>
+            <CheckInfo lastCheckTimestamp="1738963203790" />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
