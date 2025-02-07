@@ -105,9 +105,8 @@ fun WoofTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        shapes = Shapes,
         typography = Typography,
+        shapes = Shapes,
         content = content
     )
 }
