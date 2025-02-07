@@ -65,6 +65,8 @@ import com.example.unscramble.data.allWords
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.unscramble.GameViewModel
+import kotlinx.coroutines.flow.update
 
 
 @Composable
@@ -88,10 +90,11 @@ fun GameScreen(   gameViewModel: GameViewModel = viewModel()
             style = typography.titleLarge,
         )
         GameLayout(
-            onUserGuessChanged = { gameViewModel.updateUserGuess(it) },
-            onKeyboardDone = { },
-            userGuess = gameViewModel.userGuess,
             currentScrambledWord = gameUiState.currentScrambledWord,
+            userGuess = gameViewModel.userGuess,
+            onUserGuessChanged = { gameViewModel.updateUserGuess(it) },
+            onKeyboardDone = { gameViewModel.checkUserGuess() },
+            isGuessWrong = gameUiState.isGuessedWordWrong,
         )
         Column(
             modifier = Modifier
@@ -102,13 +105,13 @@ fun GameScreen(   gameViewModel: GameViewModel = viewModel()
         ) {
 
             Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(start = 8.dp),
+                onClick = { gameViewModel.checkUserGuess() }
             ) {
-                Text(
-                    text = stringResource(R.string.submit),
-                    fontSize = 16.sp
-                )
+                Text(stringResource(R.string.submit))
             }
 
             OutlinedButton(
@@ -142,6 +145,7 @@ fun GameStatus(score: Int, modifier: Modifier = Modifier) {
 @Composable
 fun GameLayout(
     currentScrambledWord: String,
+    isGuessWrong: Boolean,
     userGuess: String,
     onUserGuessChanged: (String) -> Unit,
     onKeyboardDone: () -> Unit,
@@ -190,8 +194,14 @@ fun GameLayout(
                     disabledContainerColor = colorScheme.surface,
                 ),
                 onValueChange = onUserGuessChanged,
-                label = { Text(stringResource(R.string.enter_your_word)) },
-                isError = false,
+                label = {
+                    if (isGuessWrong) {
+                        Text(stringResource(R.string.wrong_guess))
+                    } else {
+                        Text(stringResource(R.string.enter_your_word))
+                    }
+                },
+                isError = isGuessWrong,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
                 ),
@@ -247,45 +257,5 @@ fun GameScreenPreview() {
         GameScreen()
     }
 }
-class GameViewModel : ViewModel() {
-    private lateinit var currentWord: String
-    private val _uiState = MutableStateFlow(GameUiState())
-    val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
-    private var usedWords: MutableSet<String> = mutableSetOf()
-    init {
-        resetGame()
-    }
-    private fun pickRandomWordAndShuffle(): String {
-        // Continue picking up a new random word until you get one that hasn't been used before
-        var currentWord = allWords.random()
-        if (usedWords.contains(currentWord)) {
-            return pickRandomWordAndShuffle()
-        } else {
-            usedWords.add(currentWord)
-            return shuffleCurrentWord(currentWord)
-        }
-    }
-    private fun shuffleCurrentWord(word: String): String {
-        val tempWord = word.toCharArray()
-        // Scramble the word
-        tempWord.shuffle()
-        while (String(tempWord).equals(word)) {
-            tempWord.shuffle()
-        }
-        return String(tempWord)
-    }
-    fun resetGame() {
-        usedWords.clear()
-        _uiState.value = GameUiState(currentScrambledWord = pickRandomWordAndShuffle())
-    }
-    fun updateUserGuess(guessedWord: String){
-        userGuess = guessedWord
-    }
-    var userGuess by mutableStateOf("")
-        private set
 
-}
-data class GameUiState(
-    val currentScrambledWord: String = ""
-)
 
